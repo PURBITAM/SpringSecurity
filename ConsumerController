@@ -1,0 +1,35 @@
+@RestController
+@RequestMapping("/api/auth/consumer")
+public class ConsumerController {
+
+    @Autowired
+    private CartService cartService;
+
+    @GetMapping("/cart")
+    public ResponseEntity<?> getCart(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Cart cart = cartService.getCartByUser(user);
+        return ResponseEntity.ok(cart);
+    }
+
+    @PostMapping("/cart")
+    public ResponseEntity<?> addProductToCart(@RequestBody Product product, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Cart cart = cartService.addProductToCart(user, product);
+        return ResponseEntity.ok(cart);
+    }
+
+    @PutMapping("/cart")
+    public ResponseEntity<?> updateCart(@RequestBody CartProduct cartProduct, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        Cart cart = cartService.updateCartProduct(user, cartProduct);
+        return ResponseEntity.ok(cart);
+    }
+
+    @DeleteMapping("/cart")
+    public ResponseEntity<?> removeProductFromCart(@RequestBody Product product, Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        cartService.removeProductFromCart(user, product);
+        return ResponseEntity.ok().build();
+    }
+}

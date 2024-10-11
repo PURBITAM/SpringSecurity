@@ -1,0 +1,89 @@
+@Entity
+public class Role {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer roleId;
+    private String role;
+
+    // Getters and Setters
+}
+
+@Entity
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer userId;
+    private String username;
+    private String password;
+
+    @ManyToOne
+    @JoinColumn(name = "roleId")
+    private Role role;
+
+    // Getters and Setters
+}
+
+@Entity
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer categoryId;
+    private String categoryName;
+
+    // Getters and Setters
+}
+
+@Entity
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer productId;
+    private String productName;
+    private Double price;
+
+    @ManyToOne
+    @JoinColumn(name = "categoryId")
+    private Category category;
+
+    @ManyToOne
+    @JoinColumn(name = "sellerId")
+    private User seller;
+
+    // Getters and Setters
+}
+
+@Entity
+public class Cart {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer cartId;
+    private Double totalAmount;
+
+    @OneToOne
+    @JoinColumn(name = "userId")
+    private User user;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL)
+    private List<CartProduct> cartProducts;
+
+    // Getters and Setters
+}
+
+@Entity
+public class CartProduct {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer cpId;
+
+    @ManyToOne
+    @JoinColumn(name = "cartId")
+    private Cart cart;
+
+    @ManyToOne
+    @JoinColumn(name = "productId")
+    private Product product;
+
+    private Integer quantity;
+
+    // Getters and Setters
+}

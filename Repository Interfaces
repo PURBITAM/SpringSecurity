@@ -1,0 +1,27 @@
+@Repository
+public interface RoleRepository extends JpaRepository<Role, Integer> {
+}
+
+@Repository
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByUsername(String username);
+}
+
+@Repository
+public interface CategoryRepository extends JpaRepository<Category, Integer> {
+}
+
+@Repository
+public interface ProductRepository extends JpaRepository<Product, Integer> {
+    List<Product> findByProductNameContainingIgnoreCaseOrCategory_CategoryNameContainingIgnoreCase(String productName, String categoryName);
+    List<Product> findBySeller(User seller);
+}
+
+@Repository
+public interface CartRepository extends JpaRepository<Cart, Integer> {
+    Optional<Cart> findByUser(User user);
+}
+
+@Repository
+public interface CartProductRepository extends JpaRepository<CartProduct, Integer> {
+}

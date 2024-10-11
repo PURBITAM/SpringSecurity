@@ -1,0 +1,96 @@
+@RestController
+@RequestMapping("/api/auth/seller")
+public class SellerController {
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
+    private CategoryRepository categoryRepository;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    // Retrieve all products for the seller
+    @GetMapping("/products")
+    public ResponseEntity<?> getSellerProducts(Authentication authentication) {
+        User seller = (User) authentication.getPrincipal();
+        List<Product> products = productRepository.findBySeller(seller);
+        return ResponseEntity.ok(products);
+    }
+
+    // Add a new product
+    @PostMapping("/product")
+    public ResponseEntity<?> addProduct(@RequestBody Product product, Authentication authentication) {
+        User seller = (User) authentication.getPrincipal();
+
+        // Set the seller and save product
+        product.setSeller(seller);
+
+        if (product.getCategory() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product category is required");
+        }
+
+        Optional<Category> categoryOpt = categoryRepository.findById(product.getCategory().getCategoryId());
+        if (categoryOpt.isPresent()) {
+            product.setCategory(categoryOpt.get());
+        } else {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Category not found");
+        }
+
+        productRepository.save(product);
+        return ResponseEntity.status(HttpStatus.CREATED).body(product);
+    }
+
+    // Update an existing product
+    @PutMapping("/product/{productId}")
+    public ResponseEntity<?> updateProduct(
+            @PathVariable Integer productId,
+            @RequestBody Product updatedProduct,
+            Authentication authentication) {
+
+        User seller = (User) authentication.getPrincipal();
+
+        Optional<Product> productOpt = productRepository.findById(productId);
+
+        if (productOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+
+        Product existingProduct = productOpt.get();
+
+        // Check if the authenticated user is the seller of the product
+        if (!existingProduct.getSeller().getUserId().equals(seller.getUserId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to update this product");
+        }
+
+        existingProduct.setProductName(updatedProduct.getProductName());
+        existingProduct.setPrice(updatedProduct.getPrice());
+        existingProduct.setCategory(updatedProduct.getCategory());
+
+        productRepository.save(existingProduct);
+        return ResponseEntity.ok(existingProduct);
+    }
+
+    // Delete a product
+    @DeleteMapping("/product/{productId}")
+    public ResponseEntity<?> deleteProduct(@PathVariable Integer productId, Authentication authentication) {
+        User seller = (User) authentication.getPrincipal();
+
+        Optional<Product> productOpt = productRepository.findById(productId);
+
+        if (productOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product not found");
+        }
+
+        Product product = productOpt.get();
+
+        // Check if the authenticated user is the seller of the product
+        if (!product.getSeller().getUserId().equals(seller.getUserId())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("You are not authorized to delete this product");
+        }
+
+        productRepository.delete(product);
+        return ResponseEntity.ok("Product deleted successfully");
+    }
+}

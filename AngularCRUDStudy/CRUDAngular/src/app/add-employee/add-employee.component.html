@@ -1,0 +1,31 @@
+<div>
+    <form action="/action_page.php">
+        <label for="fname">Employee Name:</label><br>
+        <input required type="text" [(ngModel)]="employee.empName" id="empName" name="empName" value="ADC"><br>
+    
+        <label for="lname">Email:</label><br>
+        <input required type="text" [(ngModel)]="employee.empEmail" id="empEmail" name="empEmail" value="email@abc"><br><br>
+    
+        <input type="submit" value="Submit" (click)="addEmployeeComponent()">
+    </form> 
+</div>
+<br>
+<form action="/action_page.php">
+    <label for="fname">Employee Id:</label><br>
+    <input required type="text" [(ngModel)]="searchId" id="searchId" name="searchId" value="searchId">
+    <input type="submit" value="Submit" (click)="getEmployeeComponent()"><span *ngIf="getEmployee"> => {{getEmployee.empId}}. Hi {{getEmployee.empName}} you have registered with email : {{getEmployee.empEmail}}</span>
+</form>
+<br>
+<div>
+    <div *ngFor="let itr of allEmployees">{{itr.empId}}. Hi {{itr.empName}} you have registered with email : {{itr.empEmail}} <button class="btn" (click)="flagChange(itr.empId)">Update</button> <button class="btn" (click)="deleteEmployeeComponent(itr.empId)">Delete</button><br><br>
+        <form action="/action_page.php" *ngIf="showFlag && itr.empId==showId">
+            <label for="fname">Employee Name:</label><br>
+            <input required type="text" [(ngModel)]="itr.empName" id="empName" name="empName" value="itr.empName"><br>
+        
+            <label for="lname">Email:</label><br>
+            <input required type="text" [(ngModel)]="itr.empEmail" id="empEmail" name="empEmail" value="itr.empEmail"><br><br>
+        
+            <input type="submit" value="Submit" (click)="updateEmployeeComponent(itr)">
+        </form>
+    </div>
+</div>

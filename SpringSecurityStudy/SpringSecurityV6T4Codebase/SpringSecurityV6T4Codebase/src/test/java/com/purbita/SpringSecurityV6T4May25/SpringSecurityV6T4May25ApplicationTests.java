@@ -52,7 +52,7 @@ class SpringSecurityV6T4May25ApplicationTests {
 	@Autowired
 	MockMvc mvc;
 
-	String c_u="jack", s_u= "Apple", p= "pass_word";
+	String c_u="jack", s_u= "apple", p= "pass_word";
 
 	@Autowired
 	CategoryRepo categoryRepo;
@@ -179,7 +179,7 @@ class SpringSecurityV6T4May25ApplicationTests {
 	.andExpect(status().is(200))
 	.andExpect(jsonPath("$.[0].productId", is(not(equals(""))))) 
 	.andExpect(jsonPath("$.[0].productName",
-	containsStringIgnoringCase("Apple iPad 10.2 8th Gen WiFi 105 Tablet"))) 
+	containsStringIgnoringCase("Apple iPad 10.2 8th Gen WiFi iOS Tablet"))) 
 	.andExpect(jsonPath("$.[0].category.categoryName", is("Electronics")));
 	}
 
